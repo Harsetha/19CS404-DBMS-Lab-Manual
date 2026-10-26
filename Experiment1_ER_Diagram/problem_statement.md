@@ -26,29 +26,37 @@ FlexiFit Gym wants a database to manage its members, trainers, and fitness progr
 ![ER Diagram](er_diagram_fitness.png)
 
 ### Entities and Attributes
-
 | Entity | Attributes (PK, FK) | Notes |
-|--------|--------------------|-------|
-|        |                    |       |
-|        |                    |       |
-|        |                    |       |
-|        |                    |       |
-|        |                    |       |
+|---|---|---|
+| Member | `MemberID (PK)`, `Name`, `MembershipType`, `StartDate` | Stores registered gym members. |
+| Program | `ProgramID (PK)`, `ProgramName`, `Description` | Stores programs such as Yoga, Zumba, and Weight Training. |
+| Trainer | `TrainerID (PK)`, `TrainerName`, `Specialization`, `Phone` | Stores trainer information. |
+| MemberProgram | `MemberID (PK, FK)`, `ProgramID (PK, FK)`, `JoinDate` | Associative entity linking members and programs. |
+| ProgramTrainer | `ProgramID (PK, FK)`, `TrainerID (PK, FK)` | Associates trainers with fitness programs. |
+| TrainingSession | `SessionID (PK)`, `MemberID (FK)`, `TrainerID (FK)`, `SessionDate`, `StartTime`, `EndTime` | Stores personal training sessions booked by members. |
+| Attendance | `AttendanceID (PK)`, `SessionID (FK)`, `AttendanceDate`, `Status` | Records attendance for each session. |
+| Payment | `PaymentID (PK)`, `MemberID (FK)`, `SessionID (FK, nullable)`, `Amount`, `PaymentDate`, `PaymentType`, `Status` | Records membership and personal training session payments. |
 
 ### Relationships and Constraints
 
 | Relationship | Cardinality | Participation | Notes |
-|--------------|------------|---------------|-------|
-|              |            |               |       |
-|              |            |               |       |
-|              |            |               |       |
+|---|---|---|---|
+| Member — MemberProgram | 1:N | MemberProgram: Total; Member: Partial | A member can join multiple programs. |
+| Program — MemberProgram | 1:N | MemberProgram: Total; Program: Partial | A program can have multiple members. |
+| Program — ProgramTrainer | 1:N | ProgramTrainer: Total; Program: Partial | A program may have multiple trainers. |
+| Trainer — ProgramTrainer | 1:N | ProgramTrainer: Total; Trainer: Partial | A trainer may be assigned to multiple programs. |
+| Member — TrainingSession | 1:N | TrainingSession: Total; Member: Partial | A member may book multiple personal training sessions. |
+| Trainer — TrainingSession | 1:N | TrainingSession: Total; Trainer: Partial | A trainer may conduct multiple sessions. |
+| TrainingSession — Attendance | 1:1 | Attendance: Total; TrainingSession: Partial | Each attendance record refers to one session. A session may not yet have an attendance record. |
+| Member — Payment | 1:N | Payment: Total; Member: Partial | A member may make multiple payments. |
 
 ### Assumptions
-- 
-- 
-- 
-
----
+1. Each member, book, event, speaker, and room has a unique identifier.
+2. Each loan refers to one book and one member. A book can be borrowed repeatedly over time.
+3. A member may register for multiple events, and an event can have multiple registered members.
+4. Each event has at least one speaker or author.
+5. A room booking can be made for an event or for individual study. It must have a room, a booking date, and a time period.
+6. Fine amounts and payment status are stored separately from loan details. The library determines the applicable fine based on its overdue policy.
 
 # Scenario B: City Library Event & Book Lending System
 
